@@ -4,3 +4,6 @@ librosa
 scikit-learn
 matplotlib
 jupyter
+joblib
+streamlit
+randomforest
