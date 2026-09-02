@@ -37,8 +37,38 @@ with st.sidebar:
             st.error(str(error))
 
 st.subheader("Record or upload audio")
-recorded_audio = st.audio_input("Record a voice sample")
-uploaded_audio = st.file_uploader("Or upload an audio file", type=["wav", "mp3", "flac", "ogg", "m4a"])
+
+if "input_source" not in st.session_state:
+    st.session_state.input_source = "Record"
+
+if st.button("Reset input", use_container_width=True):
+    st.session_state.input_source = "Record"
+    st.session_state.pop("recorded_audio", None)
+    st.session_state.pop("uploaded_audio", None)
+    st.rerun()
+
+input_source = st.radio(
+    "Choose input source",
+    ["Record", "Upload"],
+    index=["Record", "Upload"].index(st.session_state.input_source),
+    horizontal=True,
+)
+st.session_state.input_source = input_source
+
+recorded_audio = None
+uploaded_audio = None
+
+if input_source == "Record":
+    recorded_audio = st.audio_input("Record a voice sample", key="recorded_audio")
+    st.session_state.pop("uploaded_audio", None)
+else:
+    uploaded_audio = st.file_uploader(
+        "Or upload an audio file",
+        type=["wav", "mp3", "flac", "ogg", "m4a"],
+        key="uploaded_audio",
+    )
+    st.session_state.pop("recorded_audio", None)
+
 audio = recorded_audio or uploaded_audio
 
 if audio:
